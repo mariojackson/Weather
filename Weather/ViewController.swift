@@ -8,11 +8,43 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    let tableView = UITableView()
+    var safeArea: UILayoutGuide! // TODO: Why do we have to add the exclamation mark in the view controller?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         
-        view.backgroundColor = .orange
+        safeArea = view.layoutMarginsGuide
+        setupTableView()
+    }
+    
+    func setupTableView() {
+        view.addSubview(tableView)
+        
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.dataSource = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: safeArea.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
+        ])
     }
 }
 
+
+extension ViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 20 // TODO: Use amount of forecasts or similar
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.textLabel?.text = "TODO"
+        
+        return cell
+    }
+}
