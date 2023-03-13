@@ -9,7 +9,7 @@ import Foundation
 
 // TODO: Remove all unneeded properties
 
-struct ResponseCurrent: Decodable {
+struct CurrentWeather: Decodable {
     let location: Location
     let current: Current
 }

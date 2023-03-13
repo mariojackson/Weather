@@ -17,6 +17,15 @@ class ViewController: UIViewController {
         
         safeArea = view.layoutMarginsGuide
         setupTableView()
+        
+        fetchCurrentWeather(from: "Zurich") { currentWeather in
+            guard let currentWeather else {
+                print("Couldn't fetch current weather")
+                return
+            }
+            
+            print(currentWeather)
+        }
     }
     
     func setupTableView() {
