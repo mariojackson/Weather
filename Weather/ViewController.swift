@@ -8,7 +8,9 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
     let tableView = UITableView()
+    let currentWeatherView = CurrentWeatherView()
     var safeArea: UILayoutGuide! // TODO: Why do we have to add the exclamation mark in the view controller?
     
     override func viewDidLoad() {
@@ -29,6 +31,7 @@ class ViewController: UIViewController {
     }
     
     func setupTableView() {
+        view.addSubview(currentWeatherView)
         view.addSubview(tableView)
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -36,7 +39,11 @@ class ViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: safeArea.topAnchor),
+            currentWeatherView.topAnchor.constraint(equalTo: safeArea.topAnchor),
+            currentWeatherView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            currentWeatherView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            tableView.topAnchor.constraint(equalTo: currentWeatherView.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
