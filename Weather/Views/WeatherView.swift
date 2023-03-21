@@ -50,7 +50,8 @@ extension WeatherView {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.spacing = 8
-        stackView.alignment = .center // TODO: Why won't this work without setting the stack views center x anchor to the views center x anchor?
+        stackView.alignment = .center
+        stackView.distribution = .fillEqually
     }
     
     func layout() {
@@ -60,9 +61,10 @@ extension WeatherView {
         addSubview(stackView)
         
         NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            
-            cityLabel.topAnchor.constraint(equalToSystemSpacingBelow: topAnchor, multiplier: 2)
+            stackView.topAnchor.constraint(equalToSystemSpacingBelow: topAnchor, multiplier: 1),
+            stackView.leadingAnchor.constraint(equalToSystemSpacingAfter: leadingAnchor, multiplier: 1),
+            trailingAnchor.constraint(equalToSystemSpacingAfter: stackView.trailingAnchor, multiplier: 1),
+            bottomAnchor.constraint(equalToSystemSpacingBelow: stackView.bottomAnchor, multiplier: 1)
         ])
     }
 }
