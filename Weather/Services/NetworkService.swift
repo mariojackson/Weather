@@ -28,7 +28,7 @@ struct NetworkService {
     func fetchCurrentWeather(from city: String, completion: @escaping(Result<CurrentWeather, Error>) -> Void) {
         let endpoint = "\(weatherAPI)&q=\(city)&aqi=no"
         
-        fetch(url: endpoint, type: CurrentWeather.self) { result in
+        fetch(url: endpoint, into: CurrentWeather.self) { result in
             switch result {
             case .success(let currentWeather):
                 completion(.success(currentWeather))
@@ -41,11 +41,11 @@ struct NetworkService {
     /// Fetches and decodes the data from the given URL
     /// - Parameters:
     ///     - url: URL to fetch
-    ///     - type: The type of the object expected to be decoded - eg. CurrentWeather
+    ///     - into: The type of the object expected to be decoded into - eg. CurrentWeather
     ///     - completion: Callback with either data or an error
     private func fetch<T: Decodable>(
         url: String,
-        type: T.Type,
+        into type: T.Type,
         completion: @escaping(Result<T, Error>) -> Void
     ) {
         guard let url = URL(string: url) else {
