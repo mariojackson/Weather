@@ -25,13 +25,13 @@ struct NetworkService {
     ///  - Parameters:
     ///     - from: City that the current weather should be fetched from
     ///     - completion: Callback with either data or an error
-    func fetchCurrentWeather(from city: String, completion: @escaping(Result<CurrentWeather, Error>) -> Void) {
+    func fetchWeather(from city: String, completion: @escaping(Result<Weather, Error>) -> Void) {
         let endpoint = "\(weatherAPI)&q=\(city)&aqi=no"
         
-        fetch(url: endpoint, into: CurrentWeather.self) { result in
+        fetch(url: endpoint, into: Weather.self) { result in
             switch result {
-            case .success(let currentWeather):
-                completion(.success(currentWeather))
+            case .success(let weather):
+                completion(.success(weather))
             case .failure(let error):
                 completion(.failure(error))
             }

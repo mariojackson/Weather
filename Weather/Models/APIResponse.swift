@@ -7,9 +7,9 @@
 
 import Foundation
 
-// TODO: Remove all unneeded properties
+// TODO: Remove all unused properties
 
-struct CurrentWeather: Decodable {
+struct Weather: Decodable {
     let location: Location
     let current: Current
 }
@@ -57,3 +57,13 @@ struct Condition: Decodable {
     let code: Int
 }
 
+
+extension Weather {
+    var city: String {
+        self.location.name
+    }
+    
+    var temperatureC: String {
+        "\(Int(self.current.temp_c.rounded())) °C"
+    }
+}

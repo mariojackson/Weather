@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  WeatherViewController.swift
 //  Weather
 //
 //  Created by Mario Jackson on 3/11/23.
@@ -7,10 +7,10 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class WeatherViewController: UIViewController {
     
     let tableView = UITableView()
-    let currentWeatherView = CurrentWeatherView(city: "Berlin", degrees: "28")
+    let weatherView = WeatherView()
     
     var safeArea: UILayoutGuide! // TODO: Why do we have to add the exclamation mark in the view controller?
     
@@ -20,11 +20,18 @@ class ViewController: UIViewController {
         
         safeArea = view.layoutMarginsGuide
         setupTableView()
+    }
+    
+    override func loadView() {
+        super.loadView()
         
-        NetworkService.shared.fetchCurrentWeather(from: "Zurich") { result in // TODO: This should be handled in CurrentWeatherView
+        NetworkService.shared.fetchWeather(from: "Zurich") { result in // TODO:
             switch result {
-            case .success(let currentWeather):
-                print(currentWeather)
+            case .success(let weather):
+                DispatchQueue.main.async { // TODO: Why are we forced to use this? I thought it would be bad to use this, but that it would still work.
+                    self.weatherView.cityLabel.text = weather.city
+                    self.weatherView.degreesLabel.text = weather.temperatureC
+                }
             case .failure(let error):
                 print(String(describing: error))
             }
@@ -32,7 +39,7 @@ class ViewController: UIViewController {
     }
     
     func setupTableView() {
-        view.addSubview(currentWeatherView)
+        view.addSubview(weatherView)
         view.addSubview(tableView)
         
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -40,12 +47,12 @@ class ViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            currentWeatherView.heightAnchor.constraint(equalToConstant: 200),
-            currentWeatherView.topAnchor.constraint(equalTo: safeArea.topAnchor),
-            currentWeatherView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            currentWeatherView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            weatherView.heightAnchor.constraint(equalToConstant: 200),
+            weatherView.topAnchor.constraint(equalTo: safeArea.topAnchor),
+            weatherView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            weatherView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
-            tableView.topAnchor.constraint(equalTo: currentWeatherView.bottomAnchor),
+            tableView.topAnchor.constraint(equalTo: weatherView.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
@@ -54,7 +61,7 @@ class ViewController: UIViewController {
 }
 
 
-extension ViewController: UITableViewDataSource {
+extension WeatherViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 20 // TODO: Use amount of forecasts or similar
     }

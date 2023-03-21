@@ -1,5 +1,5 @@
 //
-//  CurrentWeatherView.swift
+//  WeatherView.swift
 //  Weather
 //
 //  Created by Mario Jackson on 3/14/23.
@@ -8,7 +8,7 @@
 import UIKit
 
 
-class CurrentWeatherView: UIView {
+class WeatherView: UIView {
     
     let cityLabel = UILabel()
     let degreesLabel = UILabel()
@@ -24,7 +24,7 @@ class CurrentWeatherView: UIView {
         layout()
     }
     
-    init(city: String = "Berlin", degrees: String = "28") {
+    init(city: String = "NOT SET", degrees: String = "NOT SET") {
         super.init(frame: .zero)
         
         cityLabel.text = city
@@ -40,7 +40,7 @@ class CurrentWeatherView: UIView {
 }
 
 
-extension CurrentWeatherView {
+extension WeatherView {
     func style() {
         translatesAutoresizingMaskIntoConstraints = false
         
