@@ -11,7 +11,7 @@ import UIKit
 class CurrentWeatherView: UIView {
     
     let cityLabel = UILabel()
-    let degreeLabel = UILabel()
+    let degreesLabel = UILabel()
     let stackView = UIStackView()
     // TODO: Add image view
     
@@ -24,12 +24,18 @@ class CurrentWeatherView: UIView {
         layout()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    init(city: String = "Berlin", degrees: String = "28") {
+        super.init(frame: .zero)
+        
+        cityLabel.text = city
+        degreesLabel.text = degrees
+        
+        style()
+        layout()
     }
     
-    override var intrinsicContentSize: CGSize {
-        return CGSize(width: 200, height: 200)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -38,11 +44,8 @@ extension CurrentWeatherView {
     func style() {
         translatesAutoresizingMaskIntoConstraints = false
         
-        cityLabel.text = "Berlin"
         cityLabel.font = .preferredFont(forTextStyle: .title1)
-        
-        degreeLabel.text = "28°"
-        degreeLabel.font = .preferredFont(forTextStyle: .title2)
+        degreesLabel.font = .preferredFont(forTextStyle: .title2)
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
@@ -52,7 +55,7 @@ extension CurrentWeatherView {
     
     func layout() {
         stackView.addArrangedSubview(cityLabel)
-        stackView.addArrangedSubview(degreeLabel)
+        stackView.addArrangedSubview(degreesLabel)
         
         addSubview(stackView)
         

@@ -10,8 +10,7 @@ import UIKit
 class ViewController: UIViewController {
     
     let tableView = UITableView()
-    let currentWeatherView = CurrentWeatherView()
-    let networkService = NetworkService()
+    let currentWeatherView = CurrentWeatherView(city: "Berlin", degrees: "28")
     
     var safeArea: UILayoutGuide! // TODO: Why do we have to add the exclamation mark in the view controller?
     
@@ -22,13 +21,13 @@ class ViewController: UIViewController {
         safeArea = view.layoutMarginsGuide
         setupTableView()
         
-        networkService.fetchCurrentWeather(from: "Zurich") { currentWeather in
-            guard let currentWeather else {
-                print("Couldn't fetch current weather")
-                return
+        NetworkService.shared.fetchCurrentWeather(from: "Zurich") { result in // TODO: This should be handled in CurrentWeatherView
+            switch result {
+            case .success(let currentWeather):
+                print(currentWeather)
+            case .failure(let error):
+                print(String(describing: error))
             }
-            
-            print(currentWeather)
         }
     }
     
@@ -41,6 +40,7 @@ class ViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
+            currentWeatherView.heightAnchor.constraint(equalToConstant: 200),
             currentWeatherView.topAnchor.constraint(equalTo: safeArea.topAnchor),
             currentWeatherView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             currentWeatherView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
