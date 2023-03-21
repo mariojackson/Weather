@@ -11,6 +11,8 @@ class ViewController: UIViewController {
     
     let tableView = UITableView()
     let currentWeatherView = CurrentWeatherView()
+    let networkService = NetworkService()
+    
     var safeArea: UILayoutGuide! // TODO: Why do we have to add the exclamation mark in the view controller?
     
     override func viewDidLoad() {
@@ -20,7 +22,7 @@ class ViewController: UIViewController {
         safeArea = view.layoutMarginsGuide
         setupTableView()
         
-        fetchCurrentWeather(from: "Zurich") { currentWeather in
+        networkService.fetchCurrentWeather(from: "Zurich") { currentWeather in
             guard let currentWeather else {
                 print("Couldn't fetch current weather")
                 return
