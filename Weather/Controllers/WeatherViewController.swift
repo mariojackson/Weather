@@ -12,7 +12,7 @@ class WeatherViewController: UIViewController {
     let tableView = UITableView()
     let weatherView = WeatherView()
     
-    var safeArea: UILayoutGuide! // TODO: Why do we have to add the exclamation mark in the view controller?
+    var safeArea: UILayoutGuide!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,10 +25,10 @@ class WeatherViewController: UIViewController {
     override func loadView() {
         super.loadView()
         
-        NetworkService.shared.fetchWeather(from: "Zurich") { result in // TODO:
+        NetworkService.shared.fetchWeather(from: "Zurich") { result in
             switch result {
             case .success(let weather):
-                DispatchQueue.main.async { // TODO: Why are we forced to use this? I thought it would be bad to use this, but that it would still work.
+                DispatchQueue.main.async {
                     self.weatherView.cityLabel.text = weather.city
                     self.weatherView.degreesLabel.text = weather.temperatureC
                 }
