@@ -12,7 +12,7 @@ class WeatherSearchView: UIView {
     
     let stackView = UIStackView()
     let title = UILabel()
-    let searchField = UITextField()
+    let searchTextField = UITextField()
     let searchButton = UIButton()
     
     override init(frame: CGRect) {
@@ -24,10 +24,6 @@ class WeatherSearchView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    override var intrinsicContentSize: CGSize {
-        return CGSize(width: 200, height: 200)
     }
 }
 
@@ -49,9 +45,9 @@ extension WeatherSearchView {
         title.text = "Weather"
         title.textAlignment = .center
         
-        searchField.translatesAutoresizingMaskIntoConstraints = false
-        searchField.placeholder = "City to search..."
-        searchField.borderStyle = .roundedRect
+        searchTextField.translatesAutoresizingMaskIntoConstraints = false
+        searchTextField.placeholder = "City to search..."
+        searchTextField.borderStyle = .roundedRect
         
         searchButton.translatesAutoresizingMaskIntoConstraints = false
         searchButton.configuration = .filled()
@@ -61,7 +57,7 @@ extension WeatherSearchView {
     
     func layout() {
         stackView.addArrangedSubview(title)
-        stackView.addArrangedSubview(searchField)
+        stackView.addArrangedSubview(searchTextField)
         stackView.addArrangedSubview(searchButton)
         
         addSubview(stackView)

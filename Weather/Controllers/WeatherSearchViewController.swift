@@ -9,7 +9,13 @@ import UIKit
 
 class WeatherSearchViewController: UIViewController {
     let searchView = WeatherSearchView()
-
+    let errorMessageLabel = UILabel()
+    let stackView = UIStackView()
+    
+    var city: String? {
+        searchView.searchTextField.text
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -21,21 +27,59 @@ class WeatherSearchViewController: UIViewController {
     
     private func style() {
         view.backgroundColor = .systemBackground
+        
+        title = "Search"
+        
+        errorMessageLabel.textColor = .systemRed
+        errorMessageLabel.textAlignment = .center
+        errorMessageLabel.isHidden = true
+        
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
     }
     
     private func layout() {
-        view.addSubview(searchView)
+        stackView.addArrangedSubview(searchView)
+        stackView.addArrangedSubview(errorMessageLabel)
+        
+        view.addSubview(stackView)
         
         NSLayoutConstraint.activate([
-            searchView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            searchView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            searchView.leadingAnchor.constraint(equalToSystemSpacingAfter: view.leadingAnchor, multiplier: 1),
-            view.trailingAnchor.constraint(equalToSystemSpacingAfter: searchView.trailingAnchor, multiplier: 1)
+            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            stackView.leadingAnchor.constraint(equalToSystemSpacingAfter: view.leadingAnchor, multiplier: 1),
+            view.trailingAnchor.constraint(equalToSystemSpacingAfter: stackView.trailingAnchor, multiplier: 1)
         ])
     }
-    
+}
+
+
+// MARK: - Actions
+extension WeatherSearchViewController {
     @objc private func searchTapped(sender: UIButton) {
-        // TODO: Show weather view and provide it the given city
-        print("TODO")
+        errorMessageLabel.isHidden = true
+        search()
+    }
+    
+    private func search() {
+        guard let city else {
+            assertionFailure("City should never be nil")
+            return
+        }
+        
+        if city.isEmpty {
+            showError(withMessage: "City cannot be blank")
+            return
+        }
+        
+        let weatherVC = WeatherViewController()
+        weatherVC.city = city
+        
+        present(weatherVC, animated: true)
+    }
+    
+    private func showError(withMessage message: String) {
+        errorMessageLabel.text = message
+        errorMessageLabel.isHidden = false
     }
 }

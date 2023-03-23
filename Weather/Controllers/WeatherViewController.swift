@@ -12,6 +12,7 @@ class WeatherViewController: UIViewController {
     let tableView = UITableView()
     let weatherView = WeatherView()
     
+    var city = "Berlin"
     var safeArea: UILayoutGuide!
     
     override func viewDidLoad() {
@@ -25,7 +26,7 @@ class WeatherViewController: UIViewController {
     override func loadView() {
         super.loadView()
         
-        NetworkService.shared.fetchWeather(from: "Zurich") { result in
+        NetworkService.shared.fetchWeather(from: city) { result in
             switch result {
             case .success(let weather):
                 DispatchQueue.main.async {
@@ -46,6 +47,18 @@ class WeatherViewController: UIViewController {
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
+        style()
+        layout()
+    }
+}
+
+
+extension WeatherViewController {
+    private func style() {
+        title = "Weather"
+    }
+    
+    private func layout() {
         NSLayoutConstraint.activate([
             weatherView.heightAnchor.constraint(equalToConstant: 200),
             weatherView.topAnchor.constraint(equalTo: safeArea.topAnchor),
