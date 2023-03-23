@@ -73,6 +73,11 @@ extension Weather {
     }
     
     func getDay(atIndex index: Int) -> String? {
+        guard (self.forecast.forecastday.count - 1) >= index else {
+            assertionFailure("Invalid index at ApiResponse.getDay")
+            return nil
+        }
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         
