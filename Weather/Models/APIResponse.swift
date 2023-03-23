@@ -88,7 +88,9 @@ extension Weather {
             return nil
         }
         
-        let weekday = dateFormatter.weekdaySymbols[Calendar.current.component(.weekday, from: date) - 1]
+        let weekday = dateFormatter.weekdaySymbols[
+            Calendar.current.component(.weekday, from: date) - 1
+        ]
 
         return String(weekday)
     }
