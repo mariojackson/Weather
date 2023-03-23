@@ -13,7 +13,7 @@ class WeatherViewController: UIViewController {
     let weatherView = WeatherView()
     
     var weather: Weather?
-    var city = "Berlin"
+    var city: String?
     var safeArea: UILayoutGuide!
     
     override func viewDidLoad() {
@@ -27,21 +27,12 @@ class WeatherViewController: UIViewController {
     override func loadView() {
         super.loadView()
         
-        NetworkService.shared.fetchWeather(from: city) { result in
-            switch result {
-            case .success(let weather):
-                DispatchQueue.main.async {
-                    self.weather = weather
-                    self.weatherView.cityLabel.text = weather.city
-                    self.weatherView.degreesLabel.text = weather.temperatureC
-                    self.setImage(url: weather.imageURL)
-                    
-                    self.tableView.reloadData() // TODO: Is that a bad way to do it, so that the table view data source gets called?
-                }
-            case .failure(let error):
-                print(String(describing: error))
-            }
+        guard let city else {
+            assertionFailure("City not set")
+            return
         }
+        
+        fetchWeather(from: city)
     }
     
     private func setupTableView() {
@@ -56,22 +47,6 @@ class WeatherViewController: UIViewController {
         layout()
     }
     
-    private func setImage(url: String) {
-        guard let url = URL(string: url) else {
-           return
-        }
-        
-        NetworkService.shared.fetchImage(url: url) { result in
-            switch result {
-            case .success(let image):
-                DispatchQueue.main.async {
-                    self.weatherView.imageView.image = image
-                }
-            case .failure(let error):
-                print(String(describing: error))
-            }
-        }
-    }
 }
 
 
@@ -96,6 +71,7 @@ extension WeatherViewController {
 }
 
 
+// MARK: - Data Source
 extension WeatherViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return weather?.forecast.forecastday.count ?? 0
@@ -107,5 +83,50 @@ extension WeatherViewController: UITableViewDataSource {
         cell.textLabel?.text = weather?.getDay(atIndex: indexPath.row)
         
         return cell
+    }
+}
+
+
+// MARK: - Helper Methods
+extension WeatherViewController {
+    
+    private func fetchWeather(from city: String) {
+        NetworkService.shared.fetchWeather(from: city) { result in
+            switch result {
+            case .success(let weather):
+                DispatchQueue.main.async {
+                    self.update(weather: weather)
+                }
+            case .failure(let error):
+                print(String(describing: error))
+            }
+        }
+    }
+    
+    private func setImage(url: String) {
+        guard let url = URL(string: url) else {
+            return
+        }
+        
+        NetworkService.shared.fetchImage(url: url) { result in
+            switch result {
+            case .success(let image):
+                DispatchQueue.main.async {
+                    self.weatherView.imageView.image = image
+                }
+            case .failure(let error):
+                print(String(describing: error))
+            }
+        }
+    }
+    
+    private func update(weather: Weather) {
+        self.weather = weather // Needs to be set its used to set the number of rows
+        
+        self.weatherView.cityLabel.text = weather.city
+        self.weatherView.degreesLabel.text = weather.temperatureC
+        self.setImage(url: weather.imageURL)
+        
+        self.tableView.reloadData() // TODO: Is that a bad way to do it, so that the table view data source gets called?
     }
 }
