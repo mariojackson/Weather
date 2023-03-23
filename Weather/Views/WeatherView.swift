@@ -13,7 +13,7 @@ class WeatherView: UIView {
     let cityLabel = UILabel()
     let degreesLabel = UILabel()
     let stackView = UIStackView()
-    // TODO: Add image view
+    let imageView = UIImageView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -52,10 +52,13 @@ extension WeatherView {
         stackView.spacing = 8
         stackView.alignment = .center
         stackView.distribution = .fillEqually
+        
+        imageView.frame(forAlignmentRect: CGRect(x: 64, y: 64, width: 64, height: 64))
     }
     
     func layout() {
         stackView.addArrangedSubview(cityLabel)
+        stackView.addArrangedSubview(imageView)
         stackView.addArrangedSubview(degreesLabel)
         
         addSubview(stackView)

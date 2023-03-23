@@ -5,13 +5,13 @@
 //  Created by Mario Jackson on 3/13/23.
 //
 
-import Foundation
+import UIKit
 
 
 struct NetworkService {
     static let shared = NetworkService()
     
-    private let weatherAPI = "https://api.weatherapi.com/v1/current.json?key=8caa2054d433489e862170320231103" // TODO: Get API key from environment
+    private let weatherAPI = "https://api.weatherapi.com/v1/forecast.json?key=8caa2054d433489e862170320231103" // TODO: Get API key from environment
     
     private init() {}
     
@@ -19,6 +19,28 @@ struct NetworkService {
         case invalidUrl
         case failedToCreateRequest
         case failedToGetData
+
+        case failedToGetImage
+        case failedToCreateImage
+    }
+    
+    /// Fetch image from the given URL and return a UIImage
+    ///   - Parameters:
+    ///      - url: URL to fetch the image from
+    ///      - completion: Callback with either a UIImage or an error
+    func fetchImage(url: URL, completion: @escaping(Result<UIImage, Error>) -> Void) {
+        DispatchQueue.global().async {
+            guard let data = try? Data(contentsOf: url) else {
+                completion(.failure(NetworkServiceError.failedToGetImage))
+                return
+            }
+            
+            if let image = UIImage(data: data) {
+                completion(.success(image))
+            } else {
+                completion(.failure(NetworkServiceError.failedToCreateImage))
+            }
+        }
     }
     
     /// Fetches the current weather from the given city.

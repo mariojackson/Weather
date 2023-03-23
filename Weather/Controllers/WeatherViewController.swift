@@ -32,6 +32,7 @@ class WeatherViewController: UIViewController {
                 DispatchQueue.main.async {
                     self.weatherView.cityLabel.text = weather.city
                     self.weatherView.degreesLabel.text = weather.temperatureC
+                    self.setImage(url: weather.imageURL)
                 }
             case .failure(let error):
                 print(String(describing: error))
@@ -39,7 +40,7 @@ class WeatherViewController: UIViewController {
         }
     }
     
-    func setupTableView() {
+    private func setupTableView() {
         view.addSubview(weatherView)
         view.addSubview(tableView)
         
@@ -49,6 +50,23 @@ class WeatherViewController: UIViewController {
         
         style()
         layout()
+    }
+    
+    private func setImage(url: String) {
+        guard let url = URL(string: url) else {
+           return
+        }
+        
+        NetworkService.shared.fetchImage(url: url) { result in
+            switch result {
+            case .success(let image):
+                DispatchQueue.main.async {
+                    self.weatherView.imageView.image = image
+                }
+            case .failure(let error):
+                print(String(describing: error))
+            }
+        }
     }
 }
 

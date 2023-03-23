@@ -66,4 +66,8 @@ extension Weather {
     var temperatureC: String {
         "\(Int(self.current.temp_c.rounded())) °C"
     }
+    
+    var imageURL: String {
+        "https:\(self.current.condition.icon)"
+    }
 }
