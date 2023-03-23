@@ -7,11 +7,11 @@
 
 import Foundation
 
-// TODO: Remove all unused properties
 
 struct Weather: Decodable {
     let location: Location
     let current: Current
+    let forecast: Forecast
 }
 
 struct Location: Decodable {
@@ -26,35 +26,36 @@ struct Location: Decodable {
 }
 
 struct Current: Decodable {
-    let last_updated_epoch: Int
-    let last_updated: String
     let temp_c: Double
     let temp_f: Double
-    let is_day: Int
     let condition: Condition
-    let wind_mph: Double
-    let wind_kph: Double
-    let wind_degree: Int
-    let wind_dir: String
-    let pressure_mb: Double
-    let pressure_in: Double
-    let precip_mm: Double
-    let precip_in: Double
-    let humidity: Int
-    let cloud: Int
     let feelslike_c: Double
     let feelslike_f: Double
-    let vis_km: Double
-    let vis_miles: Double
-    let uv: Double
-    let gust_mph: Double
-    let gust_kph: Double
 }
 
 struct Condition: Decodable {
     let text: String
     let icon: String
     let code: Int
+}
+
+struct Forecast: Decodable {
+    let forecastday: [ForecastDay]
+}
+
+struct ForecastDay: Decodable {
+    let date: String
+    let day: Day
+}
+
+struct Day: Decodable {
+    let maxtemp_c: Double
+    let maxtemp_f: Double
+    let mintemp_c: Double
+    let mintemp_f: Double
+    let avgtemp_c: Double
+    let avgtemp_f: Double
+    let condition: Condition
 }
 
 
@@ -69,5 +70,21 @@ extension Weather {
     
     var imageURL: String {
         "https:\(self.current.condition.icon)"
+    }
+    
+    func getDay(atIndex index: Int) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = self.forecast.forecastday[index].date
+        let date = dateFormatter.date(from: dateString)
+        
+        guard let date else {
+            return nil
+        }
+        
+        let weekday = dateFormatter.weekdaySymbols[Calendar.current.component(.weekday, from: date) - 1]
+
+        return String(weekday)
     }
 }

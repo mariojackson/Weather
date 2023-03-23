@@ -48,7 +48,7 @@ struct NetworkService {
     ///     - from: City that the current weather should be fetched from
     ///     - completion: Callback with either data or an error
     func fetchWeather(from city: String, completion: @escaping(Result<Weather, Error>) -> Void) {
-        let endpoint = "\(weatherAPI)&q=\(city)&aqi=no"
+        let endpoint = "\(weatherAPI)&q=\(city)&aqi=no&days=5"
         
         fetch(url: endpoint, into: Weather.self) { result in
             switch result {

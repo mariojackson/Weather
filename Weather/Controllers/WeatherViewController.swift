@@ -12,6 +12,7 @@ class WeatherViewController: UIViewController {
     let tableView = UITableView()
     let weatherView = WeatherView()
     
+    var weather: Weather?
     var city = "Berlin"
     var safeArea: UILayoutGuide!
     
@@ -30,9 +31,12 @@ class WeatherViewController: UIViewController {
             switch result {
             case .success(let weather):
                 DispatchQueue.main.async {
+                    self.weather = weather
                     self.weatherView.cityLabel.text = weather.city
                     self.weatherView.degreesLabel.text = weather.temperatureC
                     self.setImage(url: weather.imageURL)
+                    
+                    self.tableView.reloadData() // TODO: Is that a bad way to do it, so that the table view data source gets called?
                 }
             case .failure(let error):
                 print(String(describing: error))
@@ -94,12 +98,13 @@ extension WeatherViewController {
 
 extension WeatherViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20 // TODO: Use amount of forecasts or similar
+        return weather?.forecast.forecastday.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        cell.textLabel?.text = "TODO"
+        
+        cell.textLabel?.text = weather?.getDay(atIndex: indexPath.row)
         
         return cell
     }
