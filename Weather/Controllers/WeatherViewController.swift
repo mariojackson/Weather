@@ -39,14 +39,18 @@ class WeatherViewController: UIViewController {
         view.addSubview(weatherView)
         view.addSubview(tableView)
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(
+            WeatherTableViewCell.self,
+            forCellReuseIdentifier: WeatherTableViewCell.identifier
+        )
+        
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.rowHeight = 50
         
         style()
         layout()
     }
-    
 }
 
 
@@ -78,9 +82,16 @@ extension WeatherViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        
-        cell.textLabel?.text = weather?.getDay(atIndex: indexPath.row)
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: WeatherTableViewCell.identifier,
+            for: indexPath) as? WeatherTableViewCell else {
+            fatalError("TableView could not dequeue resuable cell in WeatherViewController")
+        }
+    
+       cell.configure(
+            withImage: UIImage(systemName: "cloud"), // TODO: set forecast image
+            label: weather?.getDay(atIndex: indexPath.row) ?? "Invalid Day"
+        )
         
         return cell
     }

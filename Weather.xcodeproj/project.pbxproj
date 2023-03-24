@@ -16,6 +16,7 @@
 		AC1BB77929BCED9F00D01D9D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC1BB77829BCED9F00D01D9D /* Assets.xcassets */; };
 		AC1BB78529BE7CED00D01D9D /* APIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1BB78429BE7CED00D01D9D /* APIResponse.swift */; };
 		AC1BB78829BF067700D01D9D /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1BB78729BF067700D01D9D /* NetworkService.swift */; };
+		AC98151F29CE090C00A5AD53 /* WeatherTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98151E29CE090C00A5AD53 /* WeatherTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		AC1BB77D29BCED9F00D01D9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC1BB78429BE7CED00D01D9D /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
 		AC1BB78729BF067700D01D9D /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		AC98151E29CE090C00A5AD53 /* WeatherTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 			children = (
 				14FC131929C05E47001CDEE7 /* WeatherView.swift */,
 				14FC131B29CA0A73001CDEE7 /* WeatherSearchView.swift */,
+				AC98151E29CE090C00A5AD53 /* WeatherTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -183,6 +186,7 @@
 				14FC131E29CA0C3B001CDEE7 /* WeatherSearchViewController.swift in Sources */,
 				AC1BB77029BCED9E00D01D9D /* AppDelegate.swift in Sources */,
 				14FC131A29C05E47001CDEE7 /* WeatherView.swift in Sources */,
+				AC98151F29CE090C00A5AD53 /* WeatherTableViewCell.swift in Sources */,
 				AC1BB77229BCED9E00D01D9D /* SceneDelegate.swift in Sources */,
 				14FC131C29CA0A73001CDEE7 /* WeatherSearchView.swift in Sources */,
 			);
