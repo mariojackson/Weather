@@ -45,6 +45,7 @@ class WeatherTableViewCell: UITableViewCell {
 }
 
 
+// MARK: - Layout
 extension WeatherTableViewCell {
     func layout() {
         weatherImageView.translatesAutoresizingMaskIntoConstraints = false

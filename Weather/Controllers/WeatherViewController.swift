@@ -15,6 +15,7 @@ class WeatherViewController: UIViewController {
     var weather: Weather?
     var city: String?
     var safeArea: UILayoutGuide!
+    var forecastImages: [UIImage] = [UIImage]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,11 +88,12 @@ extension WeatherViewController: UITableViewDataSource {
             for: indexPath) as? WeatherTableViewCell else {
             fatalError("TableView could not dequeue resuable cell in WeatherViewController")
         }
-    
-       cell.configure(
-            withImage: UIImage(systemName: "cloud"), // TODO: set forecast image
-            label: weather?.getDay(atIndex: indexPath.row) ?? "Invalid Day"
+        
+        cell.configure(
+            withImage: self.forecastImages[indexPath.row],
+            label: self.weather?.getDay(atIndex: indexPath.row) ?? "Invalid Day"
         )
+        
         
         return cell
     }
@@ -106,7 +108,8 @@ extension WeatherViewController {
             switch result {
             case .success(let weather):
                 DispatchQueue.main.async {
-                    self.update(weather: weather)
+                    self.weather = weather
+                    self.fetchForecastImages()
                 }
             case .failure(let error):
                 print(String(describing: error))
@@ -114,7 +117,37 @@ extension WeatherViewController {
         }
     }
     
-    private func setImage(url: String) {
+    private func fetchForecastImages() { // TODO: Ask BJ if there is a better way to do it.
+        guard let forecasts = weather?.forecast.forecastday else {
+            return
+        }
+        
+        let dispatchGroup = DispatchGroup()
+        
+        for forecast in forecasts {
+            dispatchGroup.enter()
+            
+            guard let url = URL(string: "https:" + forecast.day.condition.icon) else {
+                return
+            }
+            
+            NetworkService.shared.fetchImage(url: url) { result in
+                dispatchGroup.leave()
+                switch result {
+                case .success(let image):
+                    self.forecastImages.append(image)
+                case .failure(let error):
+                    print(String(describing: error))
+                }
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.updateUI()
+        }
+    }
+    
+    private func setHeaderImage(url: String) {
         guard let url = URL(string: url) else {
             return
         }
@@ -131,12 +164,14 @@ extension WeatherViewController {
         }
     }
     
-    private func update(weather: Weather) {
-        self.weather = weather // Needs to be set its used to set the number of rows
+    private func updateUI() {
+        guard let weather = self.weather else {
+            fatalError("Weather cannot be nil")
+        }
         
         self.weatherView.cityLabel.text = weather.city
         self.weatherView.degreesLabel.text = weather.temperatureC
-        self.setImage(url: weather.imageURL)
+        self.setHeaderImage(url: weather.imageURL)
         
         self.tableView.reloadData() // TODO: Is that a bad way to do it, so that the table view data source gets called?
     }
