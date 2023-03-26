@@ -90,7 +90,7 @@ extension WeatherViewController: UITableViewDataSource {
         }
         
         cell.configure(
-            withImage: self.forecastImages[indexPath.row],
+            withImage: self.forecastImages[safe: indexPath.row],
             label: self.weather?.getDay(atIndex: indexPath.row) ?? "Invalid Day"
         )
         
@@ -112,7 +112,7 @@ extension WeatherViewController {
                     self.fetchForecastImages()
                 }
             case .failure(let error):
-                print(String(describing: error))
+                print("Error fetching weather: \(error.localizedDescription)")
             }
         }
     }
@@ -124,10 +124,11 @@ extension WeatherViewController {
         
         let dispatchGroup = DispatchGroup()
         
-        for forecast in forecasts {
+        forecasts.forEach { forecast in
             dispatchGroup.enter()
             
             guard let url = URL(string: "https:" + forecast.day.condition.icon) else {
+                dispatchGroup.leave()
                 return
             }
             
@@ -137,7 +138,7 @@ extension WeatherViewController {
                 case .success(let image):
                     self.forecastImages.append(image)
                 case .failure(let error):
-                    print(String(describing: error))
+                    print("Error fetching image: \(error.localizedDescription)")
                 }
             }
         }
@@ -166,7 +167,8 @@ extension WeatherViewController {
     
     private func updateUI() {
         guard let weather = self.weather else {
-            fatalError("Weather cannot be nil")
+            print("Weather cannot be nil")
+            return
         }
         
         self.weatherView.cityLabel.text = weather.city

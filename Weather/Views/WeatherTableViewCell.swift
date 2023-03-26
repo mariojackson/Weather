@@ -55,15 +55,15 @@ extension WeatherTableViewCell {
         self.contentView.addSubview(weatherImageView)
         
         NSLayoutConstraint.activate([
-            weatherLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-            weatherLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
-            weatherLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 16),
+            weatherLabel.topAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.topAnchor),
+            weatherLabel.bottomAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.bottomAnchor),
+            weatherLabel.leadingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.leadingAnchor, constant: 16),
             
             weatherImageView.heightAnchor.constraint(equalToConstant: 32),
             weatherImageView.widthAnchor.constraint(equalToConstant: 32),
             
-            weatherImageView.leadingAnchor.constraint(equalTo: weatherLabel.trailingAnchor),
-            weatherImageView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -16),
+            weatherImageView.leadingAnchor.constraint(equalTo: weatherLabel.layoutMarginsGuide.trailingAnchor),
+            weatherImageView.trailingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.trailingAnchor, constant: -16),
             weatherImageView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor)
         ])
     }
