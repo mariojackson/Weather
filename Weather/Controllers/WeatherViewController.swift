@@ -11,7 +11,6 @@ class WeatherViewController: UIViewController {
     
     let tableView = UITableView()
     let weatherView = WeatherView()
-    let imageCache = NSCache<NSString, UIImage>()
     
     var weather: Weather?
     var city: String?
@@ -94,12 +93,11 @@ extension WeatherViewController: UITableViewDataSource {
         }
         
         cell.configure(
-            withImage: self.imageCache.object(forKey: forecast.iconUrl as NSString),
+            withImage: ImageCache.shared.getImage(forUrl: forecast.iconUrl),
             day: self.weather?.getDay(atIndex: indexPath.row) ?? "Invalid Day",
             maxDegree: forecast.maxDegreeC,
             minDegree: forecast.minDegreeC
         )
-        
         
         return cell
     }
@@ -133,7 +131,7 @@ extension WeatherViewController {
         forecasts.forEach { forecast in
             dispatchGroup.enter()
             
-            if imageCache.object(forKey: forecast.iconUrl as NSString) != nil {
+            if ImageCache.shared.getImage(forUrl: forecast.iconUrl) != nil {
                 print("Using cached image for: \(forecast.iconUrl)")
                 return
             }
@@ -148,7 +146,7 @@ extension WeatherViewController {
                 
                 switch result {
                 case .success(let image):
-                    self.imageCache.setObject(image, forKey: forecast.iconUrl as NSString)
+                    ImageCache.shared.setImage(image, forUrl: forecast.iconUrl)
                 case .failure(let error):
                     print("Error fetching forecast image: \(error.localizedDescription)")
                 }
