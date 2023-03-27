@@ -133,6 +133,7 @@ extension WeatherViewController {
             
             if ImageCache.shared.getImage(forUrl: forecast.iconUrl) != nil {
                 print("Using cached image for: \(forecast.iconUrl)")
+                dispatchGroup.leave()
                 return
             }
             
@@ -159,6 +160,12 @@ extension WeatherViewController {
     }
     
     private func setHeaderImage(url: String) {
+        if let image = ImageCache.shared.getImage(forUrl: url) {
+            print("Using cached header image for \(url)")
+            self.weatherView.imageView.image = image
+            return
+        }
+        
         guard let url = URL(string: url) else {
             return
         }
@@ -166,6 +173,7 @@ extension WeatherViewController {
         NetworkService.shared.fetchImage(url: url) { result in
             switch result {
             case .success(let image):
+                ImageCache.shared.setImage(image, forUrl: url.absoluteString)
                 DispatchQueue.main.async {
                     self.weatherView.imageView.image = image
                 }
