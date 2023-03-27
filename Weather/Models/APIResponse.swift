@@ -72,8 +72,17 @@ extension Weather {
         "https:\(self.current.condition.icon)"
     }
     
+    func getForecast(atIndex index: Int) -> ForecastDay? {
+        guard isForecastIndexValid(index) else {
+            assertionFailure("Invalid index at ApiResponse.getForecast")
+            return nil
+        }
+        
+        return self.forecast.forecastday[index]
+    }
+    
     func getDay(atIndex index: Int) -> String? {
-        guard (self.forecast.forecastday.count - 1) >= index else {
+        guard isForecastIndexValid(index) else {
             assertionFailure("Invalid index at ApiResponse.getDay")
             return nil
         }
@@ -93,5 +102,24 @@ extension Weather {
         ]
 
         return String(weekday)
+    }
+    
+    private func isForecastIndexValid(_ index: Int) -> Bool {
+        guard (self.forecast.forecastday.count - 1) >= index else {
+            return false
+        }
+        
+        return true
+    }
+}
+
+
+extension ForecastDay {
+    var maxDegreeC: String {
+        "\(Int(self.day.maxtemp_c.rounded())) °C"
+    }
+    
+    var minDegreeC: String {
+        "\(Int(self.day.mintemp_c.rounded())) °C"
     }
 }

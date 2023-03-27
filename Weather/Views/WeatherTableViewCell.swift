@@ -11,26 +11,59 @@ class WeatherTableViewCell: UITableViewCell {
     
     static let identifier = "WeatherCell"
     
+    private let stackView: UIStackView = {
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.spacing = 8
+        
+        return stack
+    }()
+    
     private let weatherImageView: UIImageView = {
         let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
         iv.image = UIImage(systemName: "cloud")
         iv.tintColor = .label
+        
         return iv
     }()
     
     private let weatherLabel: UILabel = {
         let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .label
         label.textAlignment = .left
         label.font = .preferredFont(forTextStyle: .title3)
         label.text = "NOT SET"
+        
+        return label
+    }()
+    
+    private let maxDegreeLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .label
+        label.font = .preferredFont(forTextStyle: .body)
+        label.text = "NOT SET"
+        
+        return label
+    }()
+    
+    private let minDegreeLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = .secondaryLabel
+        label.font = .preferredFont(forTextStyle: .body)
+        label.text = "NOT SET"
+        
         return label
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        self.style()
         self.layout()
     }
     
@@ -38,33 +71,45 @@ class WeatherTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func configure(withImage image: UIImage?, label: String) {
+    public func configure(withImage image: UIImage?, day: String, maxDegree: String, minDegree: String) {
         self.weatherImageView.image = image ?? self.weatherImageView.image
-        self.weatherLabel.text = label
+        self.weatherLabel.text = day
+        self.maxDegreeLabel.text = maxDegree
+        self.minDegreeLabel.text = minDegree
     }
 }
 
 
 // MARK: - Layout
 extension WeatherTableViewCell {
+    func style() {
+        minDegreeLabel.textAlignment = .right
+        maxDegreeLabel.textAlignment = .right
+    }
+    
     func layout() {
-        weatherImageView.translatesAutoresizingMaskIntoConstraints = false
-        weatherLabel.translatesAutoresizingMaskIntoConstraints = false
+        stackView.addArrangedSubview(weatherLabel)
+        stackView.addArrangedSubview(weatherImageView)
+        stackView.addArrangedSubview(maxDegreeLabel)
+        stackView.addArrangedSubview(minDegreeLabel)
         
-        self.contentView.addSubview(weatherLabel)
-        self.contentView.addSubview(weatherImageView)
+        self.contentView.addSubview(stackView)
         
         NSLayoutConstraint.activate([
-            weatherLabel.topAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.topAnchor),
-            weatherLabel.bottomAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.bottomAnchor),
-            weatherLabel.leadingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.leadingAnchor, constant: 16),
+            // Stack View
+            stackView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.trailingAnchor),
+            stackView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor),
             
-            weatherImageView.heightAnchor.constraint(equalToConstant: 32),
+            // Weather Image
             weatherImageView.widthAnchor.constraint(equalToConstant: 32),
             
-            weatherImageView.leadingAnchor.constraint(equalTo: weatherLabel.layoutMarginsGuide.trailingAnchor),
-            weatherImageView.trailingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.trailingAnchor, constant: -16),
-            weatherImageView.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor)
+            // Max Degree Label
+            maxDegreeLabel.widthAnchor.constraint(equalToConstant: 60),
+            
+            // Min Degree Label
+            minDegreeLabel.widthAnchor.constraint(equalToConstant: 60)
         ])
     }
 }

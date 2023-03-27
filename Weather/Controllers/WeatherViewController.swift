@@ -47,7 +47,7 @@ class WeatherViewController: UIViewController {
         
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.rowHeight = 50
+        tableView.rowHeight = 40
         
         style()
         layout()
@@ -67,7 +67,7 @@ extension WeatherViewController {
             weatherView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             weatherView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
-            tableView.topAnchor.constraint(equalTo: weatherView.bottomAnchor),
+            tableView.topAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
@@ -91,7 +91,9 @@ extension WeatherViewController: UITableViewDataSource {
         
         cell.configure(
             withImage: self.forecastImages[safe: indexPath.row],
-            label: self.weather?.getDay(atIndex: indexPath.row) ?? "Invalid Day"
+            day: self.weather?.getDay(atIndex: indexPath.row) ?? "Invalid Day",
+            maxDegree: self.weather?.getForecast(atIndex: indexPath.row)?.maxDegreeC ?? "",
+            minDegree: self.weather?.getForecast(atIndex: indexPath.row)?.minDegreeC ?? ""
         )
         
         
