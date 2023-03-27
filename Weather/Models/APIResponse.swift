@@ -122,4 +122,8 @@ extension ForecastDay {
     var minDegreeC: String {
         "\(Int(self.day.mintemp_c.rounded())) °C"
     }
+    
+    var iconUrl: String {
+        "https:\(self.day.condition.icon)"
+    }
 }

@@ -11,11 +11,11 @@ class WeatherViewController: UIViewController {
     
     let tableView = UITableView()
     let weatherView = WeatherView()
+    let imageCache = NSCache<NSString, UIImage>()
     
     var weather: Weather?
     var city: String?
     var safeArea: UILayoutGuide!
-    var forecastImages: [UIImage] = [UIImage]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -89,11 +89,15 @@ extension WeatherViewController: UITableViewDataSource {
             fatalError("TableView could not dequeue resuable cell in WeatherViewController")
         }
         
+        guard let forecast = self.weather?.getForecast(atIndex: indexPath.row) else {
+            return cell
+        }
+        
         cell.configure(
-            withImage: self.forecastImages[safe: indexPath.row],
+            withImage: self.imageCache.object(forKey: forecast.iconUrl as NSString),
             day: self.weather?.getDay(atIndex: indexPath.row) ?? "Invalid Day",
-            maxDegree: self.weather?.getForecast(atIndex: indexPath.row)?.maxDegreeC ?? "",
-            minDegree: self.weather?.getForecast(atIndex: indexPath.row)?.minDegreeC ?? ""
+            maxDegree: forecast.maxDegreeC,
+            minDegree: forecast.minDegreeC
         )
         
         
@@ -129,18 +133,24 @@ extension WeatherViewController {
         forecasts.forEach { forecast in
             dispatchGroup.enter()
             
-            guard let url = URL(string: "https:" + forecast.day.condition.icon) else {
+            if imageCache.object(forKey: forecast.iconUrl as NSString) != nil {
+                print("Using cached image for: \(forecast.iconUrl)")
+                return
+            }
+            
+            guard let url = URL(string: forecast.iconUrl) else {
                 dispatchGroup.leave()
                 return
             }
             
             NetworkService.shared.fetchImage(url: url) { result in
                 dispatchGroup.leave()
+                
                 switch result {
                 case .success(let image):
-                    self.forecastImages.append(image)
+                    self.imageCache.setObject(image, forKey: forecast.iconUrl as NSString)
                 case .failure(let error):
-                    print("Error fetching image: \(error.localizedDescription)")
+                    print("Error fetching forecast image: \(error.localizedDescription)")
                 }
             }
         }
@@ -162,7 +172,7 @@ extension WeatherViewController {
                     self.weatherView.imageView.image = image
                 }
             case .failure(let error):
-                print(String(describing: error))
+                print("Error fetching image: \(error.localizedDescription)")
             }
         }
     }
