@@ -1,77 +1,34 @@
 //
-//  APIResponse.swift
+//  Weather+Extensions.swift
 //  Weather
 //
-//  Created by Mario Jackson on 3/12/23.
+//  Created by Mario Jackson on 3/28/23.
 //
 
-import UIKit
+import Foundation
 
 
-struct Weather: Decodable {
-    let location: Location
-    let current: Current
-    let forecast: Forecast
-}
-
-struct Location: Decodable {
-    let name: String
-    let region: String
-    let country: String
-    let lat: Double
-    let lon: Double
-    let tz_id: String
-    let localtime_epoch: Int
-    let localtime: String
-}
-
-struct Current: Decodable {
-    let temp_c: Double
-    let temp_f: Double
-    let condition: Condition
-    let feelslike_c: Double
-    let feelslike_f: Double
-}
-
-struct Condition: Decodable {
-    let text: String
-    let icon: String
-    let code: Int
-}
-
-struct Forecast: Decodable {
-    let forecastday: [ForecastDay]
-}
-
-struct ForecastDay: Decodable {
-    let date: String
-    let day: Day
-}
-
-struct Day: Decodable {
-    let maxtemp_c: Double
-    let maxtemp_f: Double
-    let mintemp_c: Double
-    let mintemp_f: Double
-    let avgtemp_c: Double
-    let avgtemp_f: Double
-    let condition: Condition
-}
-
-
+/// Extension for the Weather model
 extension Weather {
+    /// City name
     var city: String {
         self.location.name
     }
     
+    /// Rounded temperature in Celsius
     var temperatureC: String {
-        "\(Int(self.current.temp_c.rounded())) °C"
+        "\(Int(self.current.temperatureC.rounded())) °C"
     }
     
+    /// Url to the image of the current weather
     var imageURL: String {
         "https:\(self.current.condition.icon)"
     }
     
+    /// Returns the forecast day at the given index
+    /// - Parameters:
+    ///   - atIndex: The index of the wanted forecast
+    /// - Returns: The forecast day if it exists
     func getForecast(atIndex index: Int) -> ForecastDay? {
         guard isForecastIndexValid(index) else {
             assertionFailure("Invalid index at ApiResponse.getForecast")
@@ -81,9 +38,13 @@ extension Weather {
         return self.forecast.forecastday[index]
     }
     
-    func getDay(atIndex index: Int) -> String? {
+    /// Returns the name of the week at the given index
+    /// - Parameters:
+    ///   - atIndex: The index of the wanted week day
+    /// - Returns: The name of the week at the given index, if it exists
+    func getWeekDay(atIndex index: Int) -> String? {
         guard isForecastIndexValid(index) else {
-            assertionFailure("Invalid index at ApiResponse.getDay")
+            assertionFailure("Invalid index at ApiResponse.getWeekDay")
             return nil
         }
         
@@ -104,6 +65,10 @@ extension Weather {
         return String(weekday)
     }
     
+    /// Checks if the given index exists in the forecasts.
+    /// - Parameters:
+    ///   - _: Index to check
+    /// - Returns: True, if the given index is valid. Otherwise false.
     private func isForecastIndexValid(_ index: Int) -> Bool {
         guard (self.forecast.forecastday.count - 1) >= index else {
             return false
@@ -114,15 +79,19 @@ extension Weather {
 }
 
 
+/// Extension for the ForecastDay model
 extension ForecastDay {
+    /// Maximum temperature of the day in Celsius
     var maxDegreeC: String {
-        "\(Int(self.day.maxtemp_c.rounded())) °C"
+        "\(Int(self.day.maxTempC.rounded())) °C"
     }
     
+    /// Mininum temperature of the day in Celsius
     var minDegreeC: String {
-        "\(Int(self.day.mintemp_c.rounded())) °C"
+        "\(Int(self.day.minTempC.rounded())) °C"
     }
     
+    /// Icon URL of the image representing the weather of the day
     var iconUrl: String {
         "https:\(self.day.condition.icon)"
     }

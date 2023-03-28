@@ -94,7 +94,7 @@ extension WeatherViewController: UITableViewDataSource {
         
         cell.configure(
             withImage: ImageCache.shared.getImage(forUrl: forecast.iconUrl),
-            day: self.weather?.getDay(atIndex: indexPath.row) ?? "Invalid Day",
+            day: self.weather?.getWeekDay(atIndex: indexPath.row) ?? "Invalid Day",
             maxDegree: forecast.maxDegreeC,
             minDegree: forecast.minDegreeC
         )
