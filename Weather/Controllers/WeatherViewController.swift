@@ -34,25 +34,10 @@ class WeatherViewController: UIViewController {
         
         fetchWeather(from: city)
     }
-    
-    private func setupTableView() {
-        view.addSubview(weatherView)
-        view.addSubview(tableView)
-        
-        tableView.register(
-            WeatherTableViewCell.self,
-            forCellReuseIdentifier: WeatherTableViewCell.identifier
-        )
-        
-        tableView.dataSource = self
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.rowHeight = 40
-        
-        configureView()
-    }
 }
 
 
+// MARK: - View Configuration
 extension WeatherViewController {
     private func configureView() {
         title = "Weather"
@@ -68,6 +53,22 @@ extension WeatherViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
         ])
+    }
+    
+    private func setupTableView() {
+        view.addSubview(weatherView)
+        view.addSubview(tableView)
+        
+        tableView.register(
+            WeatherTableViewCell.self,
+            forCellReuseIdentifier: WeatherTableViewCell.identifier
+        )
+        
+        tableView.dataSource = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.rowHeight = 40
+        
+        configureView()
     }
 }
 

@@ -25,8 +25,11 @@ class WeatherSearchViewController: UIViewController {
         
         searchView.searchButton.addTarget(self, action: #selector(searchTapped), for: .primaryActionTriggered)
     }
-    
-    // MARK: - View Configuration
+}
+
+
+// MARK: - View Configuration
+extension WeatherSearchViewController {
     private func configureViews() {
         view.backgroundColor = .systemBackground
         title = "Search"
@@ -54,15 +57,6 @@ class WeatherSearchViewController: UIViewController {
         errorMessageLabel.textAlignment = .center
         errorMessageLabel.isHidden = true
     }
-}
-
-
-// MARK: - Actions
-extension WeatherSearchViewController {
-    @objc private func searchTapped(sender: UIButton) {
-        errorMessageLabel.isHidden = true
-        search()
-    }
     
     private func addWeatherView() {
         weatherVC.city = city
@@ -81,6 +75,15 @@ extension WeatherSearchViewController {
         
         weatherVC.didMove(toParent: self)
     }
+}
+
+
+// MARK: - Actions
+extension WeatherSearchViewController {
+    @objc private func searchTapped(sender: UIButton) {
+        errorMessageLabel.isHidden = true
+        search()
+    }
     
     private func search() {
         guard let city else {
@@ -95,7 +98,11 @@ extension WeatherSearchViewController {
         
         addWeatherView()
     }
-    
+}
+
+
+// MARK: - Helper Methods
+extension WeatherSearchViewController {
     private func showError(withMessage message: String) {
         errorMessageLabel.text = message
         errorMessageLabel.isHidden = false

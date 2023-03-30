@@ -51,6 +51,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		14AD6ACA29D5B908001A51FA /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				14A55A7329D310A50026EBFC /* Weather+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		14FC131529C05B3C001CDEE7 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -97,11 +105,12 @@
 		AC1BB76E29BCED9E00D01D9D /* Weather */ = {
 			isa = PBXGroup;
 			children = (
-				AC0FFB7129D0E99E003DA42A /* helpers */,
+				AC1BB78329BE7C0A00D01D9D /* Models */,
 				14FC131829C05E21001CDEE7 /* Views */,
 				14FC131529C05B3C001CDEE7 /* Controllers */,
 				AC1BB78629BF066400D01D9D /* Services */,
-				AC1BB78329BE7C0A00D01D9D /* Models */,
+				14AD6ACA29D5B908001A51FA /* Extensions */,
+				AC0FFB7129D0E99E003DA42A /* helpers */,
 				AC1BB76F29BCED9E00D01D9D /* AppDelegate.swift */,
 				AC1BB77129BCED9E00D01D9D /* SceneDelegate.swift */,
 				AC1BB77829BCED9F00D01D9D /* Assets.xcassets */,
@@ -114,7 +123,6 @@
 			isa = PBXGroup;
 			children = (
 				AC1BB78429BE7CED00D01D9D /* Weather.swift */,
-				14A55A7329D310A50026EBFC /* Weather+Extensions.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
