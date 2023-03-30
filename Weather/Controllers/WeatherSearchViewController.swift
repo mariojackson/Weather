@@ -8,11 +8,10 @@
 import UIKit
 
 class WeatherSearchViewController: UIViewController {
+    
     let searchView = WeatherSearchView()
     let errorMessageLabel = UILabel()
     let stackView = UIStackView()
-    
-    private let weatherVC = WeatherViewController()
     
     var city: String? {
         searchView.searchTextField.text
@@ -59,6 +58,7 @@ extension WeatherSearchViewController {
     }
     
     private func addWeatherView() {
+        let weatherVC = WeatherViewController()
         weatherVC.city = city
         
         self.addChild(weatherVC)
