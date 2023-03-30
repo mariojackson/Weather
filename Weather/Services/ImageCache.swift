@@ -17,7 +17,7 @@ struct ImageCache {
     /// Returns a UIImage if it's cached by the given URL.
     ///   - Parameters:
     ///     - forUrl: The image URL
-    func getImage(forUrl url: String) -> UIImage? {
+    func get(forUrl url: String) -> UIImage? {
         return cache.object(forKey: NSString(string: url))
     }
     
@@ -25,12 +25,12 @@ struct ImageCache {
     ///   - Parameters:
     ///       - image: Image to cache
     ///       - forUrl: Image url
-    func setImage(_ image: UIImage, forUrl url: String) {
+    func set(_ image: UIImage, forUrl url: String) {
         cache.setObject(image, forKey: NSString(string: url))
     }
     
     /// Removes all images from the image cache.
-    func removeAllImages() {
+    func removeAll() {
         cache.removeAllObjects()
     }
 }

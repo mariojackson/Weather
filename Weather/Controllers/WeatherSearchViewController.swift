@@ -12,6 +12,8 @@ class WeatherSearchViewController: UIViewController {
     let errorMessageLabel = UILabel()
     let stackView = UIStackView()
     
+    private let weatherVC = WeatherViewController()
+    
     var city: String? {
         searchView.searchTextField.text
     }
@@ -19,37 +21,38 @@ class WeatherSearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        style()
-        layout()
+        configureViews()
         
         searchView.searchButton.addTarget(self, action: #selector(searchTapped), for: .primaryActionTriggered)
     }
     
-    private func style() {
+    // MARK: - View Configuration
+    private func configureViews() {
         view.backgroundColor = .systemBackground
-        
         title = "Search"
         
-        errorMessageLabel.textColor = .systemRed
-        errorMessageLabel.textAlignment = .center
-        errorMessageLabel.isHidden = true
-        
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
+        configureStackView()
     }
     
-    private func layout() {
+    private func configureStackView() {
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
         stackView.addArrangedSubview(searchView)
         stackView.addArrangedSubview(errorMessageLabel)
         
         view.addSubview(stackView)
         
         NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            stackView.topAnchor.constraint(equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 1),
             stackView.leadingAnchor.constraint(equalToSystemSpacingAfter: view.leadingAnchor, multiplier: 1),
             view.trailingAnchor.constraint(equalToSystemSpacingAfter: stackView.trailingAnchor, multiplier: 1)
         ])
+    }
+    
+    private func configureErrorMessageLabel() {
+        errorMessageLabel.textColor = .systemRed
+        errorMessageLabel.textAlignment = .center
+        errorMessageLabel.isHidden = true
     }
 }
 
@@ -59,6 +62,24 @@ extension WeatherSearchViewController {
     @objc private func searchTapped(sender: UIButton) {
         errorMessageLabel.isHidden = true
         search()
+    }
+    
+    private func addWeatherView() {
+        weatherVC.city = city
+        
+        self.addChild(weatherVC)
+        view.addSubview(weatherVC.view)
+        
+        weatherVC.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            weatherVC.view.topAnchor.constraint(equalTo: stackView.bottomAnchor),
+            weatherVC.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            weatherVC.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            weatherVC.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        weatherVC.didMove(toParent: self)
     }
     
     private func search() {
@@ -72,10 +93,7 @@ extension WeatherSearchViewController {
             return
         }
         
-        let weatherVC = WeatherViewController()
-        weatherVC.city = city
-        
-        present(weatherVC, animated: true)
+        addWeatherView()
     }
     
     private func showError(withMessage message: String) {

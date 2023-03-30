@@ -48,18 +48,15 @@ class WeatherViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.rowHeight = 40
         
-        style()
-        layout()
+        configureView()
     }
 }
 
 
 extension WeatherViewController {
-    private func style() {
+    private func configureView() {
         title = "Weather"
-    }
-    
-    private func layout() {
+        
         NSLayoutConstraint.activate([
             weatherView.heightAnchor.constraint(equalToConstant: 200),
             weatherView.topAnchor.constraint(equalTo: safeArea.topAnchor),
@@ -93,7 +90,7 @@ extension WeatherViewController: UITableViewDataSource {
         }
         
         cell.configure(
-            withImage: ImageCache.shared.getImage(forUrl: forecast.iconUrl),
+            withImage: ImageCache.shared.get(forUrl: forecast.iconUrl),
             day: self.weather?.getWeekDay(atIndex: indexPath.row) ?? "Invalid Day",
             maxDegree: forecast.maxDegreeC,
             minDegree: forecast.minDegreeC
@@ -121,23 +118,30 @@ extension WeatherViewController {
         }
     }
     
-    private func fetchForecastImages() { // TODO: Ask BJ if there is a better way to do it.
+    private func fetchForecastImages() {
+        var imageLinks = [String]()
+        var failedImageFetchLinks = [String]() // TODO: In a real app we would log the links to these images or similar
+        
         guard let forecasts = weather?.forecast.forecastday else {
             return
         }
         
+        forecasts.forEach { forecast in
+            imageLinks.append(forecast.iconUrl)
+        }
+        
         let dispatchGroup = DispatchGroup()
         
-        forecasts.forEach { forecast in
+        imageLinks.forEach { link in
             dispatchGroup.enter()
             
-            if ImageCache.shared.getImage(forUrl: forecast.iconUrl) != nil {
-                print("Using cached image for: \(forecast.iconUrl)")
+            if ImageCache.shared.get(forUrl: link) != nil {
+                print("Using cached image for: \(link)")
                 dispatchGroup.leave()
                 return
             }
             
-            guard let url = URL(string: forecast.iconUrl) else {
+            guard let url = URL(string: link) else {
                 dispatchGroup.leave()
                 return
             }
@@ -147,9 +151,10 @@ extension WeatherViewController {
                 
                 switch result {
                 case .success(let image):
-                    ImageCache.shared.setImage(image, forUrl: forecast.iconUrl)
+                    ImageCache.shared.set(image, forUrl: link)
                 case .failure(let error):
-                    print("Error fetching forecast image: \(error.localizedDescription)")
+                    failedImageFetchLinks.append(url.absoluteString)
+                    print("Error fetching image: \(error.localizedDescription)")
                 }
             }
         }
@@ -160,7 +165,7 @@ extension WeatherViewController {
     }
     
     private func setHeaderImage(url: String) {
-        if let image = ImageCache.shared.getImage(forUrl: url) {
+        if let image = ImageCache.shared.get(forUrl: url) {
             print("Using cached header image for \(url)")
             self.weatherView.imageView.image = image
             return
@@ -173,7 +178,7 @@ extension WeatherViewController {
         NetworkService.shared.fetchImage(url: url) { result in
             switch result {
             case .success(let image):
-                ImageCache.shared.setImage(image, forUrl: url.absoluteString)
+                ImageCache.shared.set(image, forUrl: url.absoluteString)
                 DispatchQueue.main.async {
                     self.weatherView.imageView.image = image
                 }
