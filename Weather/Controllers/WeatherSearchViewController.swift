@@ -58,8 +58,9 @@ extension WeatherSearchViewController {
     }
     
     private func addWeatherView() {
-        let weatherVC = WeatherViewController()
-        weatherVC.city = city
+        guard let city else { return }
+        
+        let weatherVC = WeatherViewController(city: city)
         
         self.addChild(weatherVC)
         view.addSubview(weatherVC.view)

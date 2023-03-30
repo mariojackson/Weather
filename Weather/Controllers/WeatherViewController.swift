@@ -9,30 +9,43 @@ import UIKit
 
 class WeatherViewController: UIViewController {
     
-    let tableView = UITableView()
-    let weatherView = WeatherView()
+    private let tableView = UITableView()
+    private let weatherView = WeatherView()
+    private var weather: Weather?
+    private var safeArea: UILayoutGuide!
     
-    var weather: Weather?
-    var city: String?
-    var safeArea: UILayoutGuide!
+    var activityIndicator = UIActivityIndicatorView(style: .large)
+    
+    var city: String
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
         safeArea = view.layoutMarginsGuide
-        setupTableView()
+        configureTableView()
+        
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(activityIndicator)
+        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        
     }
     
     override func loadView() {
         super.loadView()
         
-        guard let city else {
-            assertionFailure("City not set")
-            return
-        }
-        
         fetchWeather(from: city)
+    }
+    
+    init(city: String) {
+        self.city = city
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -55,7 +68,7 @@ extension WeatherViewController {
         ])
     }
     
-    private func setupTableView() {
+    private func configureTableView() {
         view.addSubview(weatherView)
         view.addSubview(tableView)
         
@@ -64,6 +77,7 @@ extension WeatherViewController {
             forCellReuseIdentifier: WeatherTableViewCell.identifier
         )
         
+        tableView.delegate = self
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.rowHeight = 40
@@ -74,7 +88,7 @@ extension WeatherViewController {
 
 
 // MARK: - Data Source
-extension WeatherViewController: UITableViewDataSource {
+extension WeatherViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return weather?.forecast.forecastday.count ?? 0
     }
@@ -99,6 +113,14 @@ extension WeatherViewController: UITableViewDataSource {
         
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) else {
+            return
+        }
+        
+        print(cell)
+    }
 }
 
 
@@ -106,7 +128,14 @@ extension WeatherViewController: UITableViewDataSource {
 extension WeatherViewController {
     
     private func fetchWeather(from city: String) {
+        activityIndicator.startAnimating()
+        
         NetworkService.shared.fetchWeather(from: city) { result in
+            defer {
+                DispatchQueue.main.async {
+                    self.activityIndicator.stopAnimating()                }
+            }
+            
             switch result {
             case .success(let weather):
                 DispatchQueue.main.async {
@@ -120,68 +149,29 @@ extension WeatherViewController {
     }
     
     private func fetchForecastImages() {
-        var imageLinks = [String]()
-        var failedImageFetchLinks = [String]() // TODO: In a real app we would log the links to these images or similar
-        
         guard let forecasts = weather?.forecast.forecastday else {
             return
         }
         
-        forecasts.forEach { forecast in
-            imageLinks.append(forecast.iconUrl)
-        }
-        
-        let dispatchGroup = DispatchGroup()
-        
-        imageLinks.forEach { link in
-            dispatchGroup.enter()
-            
-            if ImageCache.shared.get(forUrl: link) != nil {
-                print("Using cached image for: \(link)")
-                dispatchGroup.leave()
-                return
-            }
-            
-            guard let url = URL(string: link) else {
-                dispatchGroup.leave()
-                return
-            }
-            
-            NetworkService.shared.fetchImage(url: url) { result in
-                dispatchGroup.leave()
-                
-                switch result {
-                case .success(let image):
-                    ImageCache.shared.set(image, forUrl: link)
-                case .failure(let error):
-                    failedImageFetchLinks.append(url.absoluteString)
-                    print("Error fetching image: \(error.localizedDescription)")
+        let imageLinks = forecasts.map { $0.iconUrl }
+        ImageLoader.shared.loadBy(links: imageLinks) { result in
+            switch result {
+            case .success:
+                DispatchQueue.main.async {
+                    self.updateUI()
                 }
+            case .failure(let error):
+                print("Error fetching image: \(error.localizedDescription)")
             }
-        }
-        
-        dispatchGroup.notify(queue: .main) {
-            self.updateUI()
         }
     }
     
     private func setHeaderImage(url: String) {
-        if let image = ImageCache.shared.get(forUrl: url) {
-            print("Using cached header image for \(url)")
-            self.weatherView.imageView.image = image
-            return
-        }
-        
-        guard let url = URL(string: url) else {
-            return
-        }
-        
-        NetworkService.shared.fetchImage(url: url) { result in
+        ImageLoader.shared.loadBy(url: url) { result in
             switch result {
-            case .success(let image):
-                ImageCache.shared.set(image, forUrl: url.absoluteString)
+            case .success:
                 DispatchQueue.main.async {
-                    self.weatherView.imageView.image = image
+                    self.weatherView.imageView.image = ImageCache.shared.get(forUrl: url)
                 }
             case .failure(let error):
                 print("Error fetching image: \(error.localizedDescription)")
