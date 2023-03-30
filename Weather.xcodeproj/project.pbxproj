@@ -84,7 +84,6 @@
 			isa = PBXGroup;
 			children = (
 				AC0FFB7229D0E9C0003DA42A /* CollectionExtensions.swift */,
-				14A2583529D5DC1900F1BB19 /* ImageLoader.swift */,
 			);
 			path = helpers;
 			sourceTree = "<group>";
@@ -134,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				AC1BB78729BF067700D01D9D /* NetworkService.swift */,
+				14A2583529D5DC1900F1BB19 /* ImageLoader.swift */,
 				AC0FFB7429D23BBE003DA42A /* ImageCache.swift */,
 			);
 			path = Services;

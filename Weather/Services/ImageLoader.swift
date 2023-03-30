@@ -14,7 +14,15 @@ struct ImageLoader {
     
     private init() {}
     
-    func loadBy(url: String, completion: @escaping(Result<ImageCache, Error>) -> Void) {
+    /// Loads an image by the given URL
+    /// - Parameters:
+    ///   - url: Image URL
+    ///   - completion: callback with either an UIImage or an error
+    func loadBy(url: String, completion: @escaping(Result<UIImage, Error>) -> Void) {
+        if let image = cache.get(forUrl: url) {
+            return completion(.success(image))
+        }
+        
         guard let url = URL(string: url) else {
             print("Error creating URL from: \(url)")
             return
@@ -24,14 +32,18 @@ struct ImageLoader {
             switch result {
             case .success(let image):
                 cache.set(image, forUrl: url.absoluteString)
-                completion(.success(cache))
+                completion(.success(image))
             case .failure(let error):
                 completion(.failure(error))
             }
         }
     }
     
-    func loadBy(links imageLinks: [String], completion: @escaping(Result<ImageCache, Error>) -> Void) {
+    /// Loads images by the given array of links
+    /// - Parameters:
+    ///   - links: Array of URL's
+    ///   - completion: callback with either an UIImage or an error
+    func loadBy(links imageLinks: [String], completion: @escaping(Result<[String:UIImage], Error>) -> Void) {
         let uncachedImageLinks = imageLinks.filter { ImageCache.shared.get(forUrl: $0) == nil }
         let dispatchGroup = DispatchGroup()
         
@@ -57,8 +69,12 @@ struct ImageLoader {
             }
         }
         
-        dispatchGroup.notify(queue: .main) {
-            completion(.success(ImageCache.shared))
+        dispatchGroup.notify(queue: DispatchQueue.global()) {
+            let images: [String:UIImage] = imageLinks.reduce(into: [String:UIImage]()) {
+                $0[$1] = cache.get(forUrl: $1)
+            }
+            
+            completion(.success(images))
         }
     }
 }

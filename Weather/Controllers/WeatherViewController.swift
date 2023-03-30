@@ -13,6 +13,7 @@ class WeatherViewController: UIViewController {
     private let weatherView = WeatherView()
     private var weather: Weather?
     private var safeArea: UILayoutGuide!
+    private var forecastImages = [String:UIImage]()
     
     var activityIndicator = UIActivityIndicatorView(style: .large)
     
@@ -23,13 +24,8 @@ class WeatherViewController: UIViewController {
         view.backgroundColor = .systemBackground
         
         safeArea = view.layoutMarginsGuide
-        configureTableView()
         
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(activityIndicator)
-        activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        
+        configureView()
     }
     
     override func loadView() {
@@ -53,6 +49,12 @@ class WeatherViewController: UIViewController {
 // MARK: - View Configuration
 extension WeatherViewController {
     private func configureView() {
+        view.addSubview(weatherView)
+        view.addSubview(tableView)
+        view.addSubview(activityIndicator)
+        
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        
         title = "Weather"
         
         NSLayoutConstraint.activate([
@@ -64,14 +66,17 @@ extension WeatherViewController {
             tableView.topAnchor.constraint(equalTo: weatherView.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
+            tableView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor),
+            
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            
         ])
+        
+        configureTableView()
     }
     
     private func configureTableView() {
-        view.addSubview(weatherView)
-        view.addSubview(tableView)
-        
         tableView.register(
             WeatherTableViewCell.self,
             forCellReuseIdentifier: WeatherTableViewCell.identifier
@@ -81,8 +86,6 @@ extension WeatherViewController {
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.rowHeight = 40
-        
-        configureView()
     }
 }
 
@@ -105,7 +108,7 @@ extension WeatherViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         cell.configure(
-            withImage: ImageCache.shared.get(forUrl: forecast.iconUrl),
+            withImage: forecastImages[forecast.iconUrl],
             day: self.weather?.getWeekDay(atIndex: indexPath.row) ?? "Invalid Day",
             maxDegree: forecast.maxDegreeC,
             minDegree: forecast.minDegreeC
@@ -133,7 +136,8 @@ extension WeatherViewController {
         NetworkService.shared.fetchWeather(from: city) { result in
             defer {
                 DispatchQueue.main.async {
-                    self.activityIndicator.stopAnimating()                }
+                    self.activityIndicator.stopAnimating()
+                }
             }
             
             switch result {
@@ -156,7 +160,8 @@ extension WeatherViewController {
         let imageLinks = forecasts.map { $0.iconUrl }
         ImageLoader.shared.loadBy(links: imageLinks) { result in
             switch result {
-            case .success:
+            case .success(let images):
+                self.forecastImages = images
                 DispatchQueue.main.async {
                     self.updateUI()
                 }
@@ -169,9 +174,9 @@ extension WeatherViewController {
     private func setHeaderImage(url: String) {
         ImageLoader.shared.loadBy(url: url) { result in
             switch result {
-            case .success:
+            case .success(let image):
                 DispatchQueue.main.async {
-                    self.weatherView.imageView.image = ImageCache.shared.get(forUrl: url)
+                    self.weatherView.imageView.image = image
                 }
             case .failure(let error):
                 print("Error fetching image: \(error.localizedDescription)")
