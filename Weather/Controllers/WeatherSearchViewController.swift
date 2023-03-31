@@ -63,7 +63,12 @@ extension WeatherSearchViewController {
         let weatherVC = WeatherViewController(city: city)
         
         self.addChild(weatherVC)
+        
+        weatherVC.view.alpha = 0
         view.addSubview(weatherVC.view)
+        UIView.animate(withDuration: 0.3) {
+            weatherVC.view.alpha = 1
+        }
         
         weatherVC.view.translatesAutoresizingMaskIntoConstraints = false
         
