@@ -95,4 +95,23 @@ extension ForecastDay {
     var iconUrl: String {
         "https:\(self.day.condition.icon)"
     }
+    
+    /// Weekday of the forecast
+    var weekday: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        
+        let dateString = self.date
+        let date = dateFormatter.date(from: dateString)
+        
+        guard let date else {
+            return "Invalid date"
+        }
+        
+        let weekday = dateFormatter.weekdaySymbols[
+            Calendar.current.component(.weekday, from: date) - 1
+        ]
+
+        return String(weekday)
+    }
 }

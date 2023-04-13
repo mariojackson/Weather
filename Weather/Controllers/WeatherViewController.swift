@@ -162,10 +162,18 @@ extension WeatherViewController: WeatherTableViewControllerDelegate, UITableView
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) as? WeatherTableViewCell else {
+            return
+        }
+                
         guard let forecastDay = weather?.getForecast(atIndex: indexPath.row) else {
             return
         }
         
-        present(WeatherForecastDayController(forecastDay: forecastDay), animated: true)
+        guard let image = cell.weatherImageView.image else {
+            return
+        }
+        
+        present(WeatherForecastDayController(forecastDay: forecastDay, image: image), animated: true)
     }
 }

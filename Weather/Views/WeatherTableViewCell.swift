@@ -21,7 +21,7 @@ class WeatherTableViewCell: UITableViewCell {
         return stack
     }()
     
-    private let weatherImageView: UIImageView = {
+    public let weatherImageView: UIImageView = {
         let iv = UIImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         iv.contentMode = .scaleAspectFit
