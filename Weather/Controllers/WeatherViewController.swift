@@ -28,16 +28,22 @@ class WeatherViewController: UIViewController {
         configureView()
     }
     
-    override func loadView() {
-        super.loadView()
-        
-        fetchWeather(from: city)
-    }
     
     init(city: String) {
         self.city = city
         
         super.init(nibName: nil, bundle: nil)
+        
+        self.fetchWeather(from: city)
+    }
+    
+    init(weather: Weather) {
+        self.weather = weather
+        self.city = weather.city
+        
+        super.init(nibName: nil, bundle: nil)
+        
+        self.updateUI()
     }
     
     required init?(coder: NSCoder) {
@@ -82,6 +88,8 @@ extension WeatherViewController {
         ])
         
         weatherTableVC.didMove(toParent: self)
+        
+        weatherTableVC.tableView.delegate = self
     }
 }
 
@@ -136,19 +144,28 @@ extension WeatherViewController {
         weatherView.degreesLabel.text = weather.temperatureC
         setHeaderImage(url: weather.imageURL)
         
-        weatherTableVC.tableView.reloadData()
-        
-        UIView.animate(withDuration: 0.3) {
-            self.weatherTableVC.view.alpha = 1
-        }
     }
 }
 
 
-extension WeatherViewController: WeatherTableViewControllerDelegate {
+extension WeatherViewController: WeatherTableViewControllerDelegate, UITableViewDelegate {
     func didFetchForecastImages() {
         DispatchQueue.main.async {
+            
             self.updateUI()
+            self.weatherTableVC.tableView.reloadData()
+            
+            UIView.animate(withDuration: 0.3) {
+                self.weatherTableVC.view.alpha = 1
+            }
         }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let forecastDay = weather?.getForecast(atIndex: indexPath.row) else {
+            return
+        }
+        
+        present(WeatherForecastDayController(forecastDay: forecastDay), animated: true)
     }
 }

@@ -53,7 +53,6 @@ extension WeatherTableViewController {
     func configureView() {
         tableView.register(WeatherTableViewCell.self, forCellReuseIdentifier: WeatherTableViewCell.identifier)
         
-        tableView.delegate = self
         tableView.dataSource = self
         
         view.addSubview(tableView)
@@ -69,7 +68,7 @@ extension WeatherTableViewController {
 
 
 // MARK: - Delegates and Data Source
-extension WeatherTableViewController: UITableViewDelegate, UITableViewDataSource {
+extension WeatherTableViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return weather.forecast.forecastday.count
     }
@@ -81,7 +80,7 @@ extension WeatherTableViewController: UITableViewDelegate, UITableViewDataSource
             fatalError("TableView could not dequeue resuable cell in WeatherViewController")
         }
         
-        guard let forecast = weather.getForecast(atIndex: indexPath.row) else {
+        guard let forecastDay = weather.getForecast(atIndex: indexPath.row) else {
             return cell
         }
         
@@ -90,21 +89,12 @@ extension WeatherTableViewController: UITableViewDelegate, UITableViewDataSource
         }
         
         cell.configure(
-            withImage: forecastImages[forecast.iconUrl],
-            day: weather.getWeekDay(atIndex: indexPath.row) ?? "Invalid Day",
-            maxDegree: forecast.maxDegreeC,
-            minDegree: forecast.minDegreeC
+            forecastDay: forecastDay,
+            withImage: forecastImages[forecastDay.iconUrl],
+            day: weather.getWeekDay(atIndex: indexPath.row) ?? "Invalid Day"
         )
         
         return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let cell = tableView.cellForRow(at: indexPath) else {
-            return
-        }
-        
-        print(cell)
     }
 }
 

@@ -11,6 +11,8 @@ class WeatherTableViewCell: UITableViewCell {
     
     static let identifier = "WeatherCell"
     
+    public var forecastDay: ForecastDay?
+    
     private let stackView: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -71,11 +73,13 @@ class WeatherTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func configure(withImage image: UIImage?, day: String, maxDegree: String, minDegree: String) {
+    public func configure(forecastDay: ForecastDay, withImage image: UIImage?, day: String) {
         self.weatherImageView.image = image ?? self.weatherImageView.image
         self.weatherLabel.text = day
-        self.maxDegreeLabel.text = maxDegree
-        self.minDegreeLabel.text = minDegree
+        self.maxDegreeLabel.text = forecastDay.maxDegreeC
+        self.minDegreeLabel.text = forecastDay.minDegreeC
+        
+        self.forecastDay = forecastDay
     }
 }
 
