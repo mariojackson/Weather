@@ -86,12 +86,12 @@ class WeatherTableViewCell: UITableViewCell {
 
 // MARK: - Layout
 extension WeatherTableViewCell {
-    func style() {
+    private func style() {
         minDegreeLabel.textAlignment = .right
         maxDegreeLabel.textAlignment = .right
     }
     
-    func layout() {
+    private func layout() {
         stackView.addArrangedSubview(weatherLabel)
         stackView.addArrangedSubview(weatherImageView)
         stackView.addArrangedSubview(maxDegreeLabel)

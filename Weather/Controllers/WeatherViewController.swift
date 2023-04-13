@@ -165,7 +165,9 @@ extension WeatherViewController: WeatherTableViewControllerDelegate, UITableView
         guard let cell = tableView.cellForRow(at: indexPath) as? WeatherTableViewCell else {
             return
         }
-                
+        
+        cell.isSelected = false
+        
         guard let forecastDay = weather?.getForecast(atIndex: indexPath.row) else {
             return
         }
