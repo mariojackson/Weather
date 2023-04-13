@@ -69,7 +69,7 @@ extension WeatherViewController {
     
     private func addTableView(weather: Weather) {
         weatherTableVC = WeatherTableViewController(weather: weather)
-        weatherTableVC?.delegate = self
+        weatherTableVC.delegate = self
         
         addChild(weatherTableVC)
         view.addSubview(weatherTableVC.view)
@@ -105,6 +105,7 @@ extension WeatherViewController {
                     self.weather = weather
                     
                     self.addTableView(weather: weather)
+                    self.weatherTableVC.view.alpha = 0
                 }
             case .failure(let error):
                 print("Error fetching weather: \(error.localizedDescription)")
@@ -126,18 +127,21 @@ extension WeatherViewController {
     }
     
     private func updateUI() {
-        guard let weather = self.weather else {
+        guard let weather else {
             print("Weather cannot be nil")
             return
         }
         
-        self.weatherView.cityLabel.text = weather.city
-        self.weatherView.degreesLabel.text = weather.temperatureC
-        self.setHeaderImage(url: weather.imageURL)
+        weatherView.cityLabel.text = weather.city
+        weatherView.degreesLabel.text = weather.temperatureC
+        setHeaderImage(url: weather.imageURL)
         
-        self.weatherTableVC.tableView.reloadData() // TODO: Is that a bad way to do it, so that the table view data source gets called?
+        weatherTableVC.tableView.reloadData()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.weatherTableVC.view.alpha = 1
+        }
     }
-    
 }
 
 

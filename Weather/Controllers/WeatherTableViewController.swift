@@ -64,8 +64,6 @@ extension WeatherTableViewController {
             view.trailingAnchor.constraint(equalToSystemSpacingAfter: tableView.trailingAnchor, multiplier: 1),
             view.bottomAnchor.constraint(equalToSystemSpacingBelow: tableView.bottomAnchor, multiplier: 1)
         ])
-        
-
     }
 }
 
